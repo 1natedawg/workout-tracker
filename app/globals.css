@@ -23,12 +23,15 @@
 }
 
 body {
-  background-color: #0a0a0a; /* Solar Gold Primary Background */
-  color: #f5f5f4; /* Warm stone text */
+  background-color: #0a0a0a;
+  /* Solar Gold Primary Background */
+  color: #f5f5f4;
+  /* Warm stone text */
   overscroll-behavior-y: none;
 }
 
 @layer utilities {
+
   /* Solar Gold Glass Card */
   .gold-card {
     background-color: rgba(23, 23, 23, 0.7);
@@ -45,18 +48,29 @@ body {
     box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.25);
     transition: all 0.2s ease;
   }
+
   .gold-btn:hover {
     background: linear-gradient(to right, #fbbf24, #f59e0b);
   }
 
-  /* Pill-Shaped Set Badge */
+  /* Increased base size and contrast for badges */
   .gold-badge {
-    background-color: rgba(245, 158, 11, 0.1);
+    background-color: rgba(245, 158, 11, 0.15);
     color: #fbbf24;
-    border: 1px solid rgba(245, 158, 11, 0.25);
-    padding: 0.125rem 0.625rem;
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    padding: 0.25rem 0.75rem;
+    /* Slightly taller */
     border-radius: 9999px;
-    font-size: 0.75rem;
-    font-weight: 500;
+    font-size: 0.85rem;
+    /* Bumping from 0.75rem */
+    font-weight: 600;
+    /* Making it bolder */
+  }
+
+  /* Make exercise names more prominent */
+  .ex-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #e7e5e4;
   }
 }

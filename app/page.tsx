@@ -417,7 +417,7 @@ export default function LogWorkoutPage() {
                 {item.sets.map((set, setIndex) => (
                   <div key={setIndex} className="space-y-1">
                     {set.prevWeight !== undefined && set.prevReps !== undefined && (
-                      <div className="flex items-center space-x-1 text-[10px] text-gray-500 px-1">
+                      <div className="flex items-center space-x-1 text-[15px] text-gray-500 px-1">
                         <History className="w-3 h-3 text-emerald-600" />
                         <span>Last: {set.prevWeight} lbs × {set.prevReps} reps</span>
                       </div>

@@ -68,16 +68,16 @@ export default function HistoryPage() {
     
     <div className="space-y-3">
       {session.exercises.map((ex: any) => (
-        <div key={ex.id} className="flex justify-between items-center text-xs">
-          <span className="text-stone-300 font-medium">{ex.exercise?.exercise?.name}</span>
-          <div className="space-x-2">
-            {ex.workout_session_sets?.map((set: any, sIdx: number) => (
-              <span key={sIdx} className="gold-badge">
-                {set.weight_lb}x{set.reps}
-              </span>
-            ))}
-          </div>
-        </div>
+        <div key={ex.id} className="flex justify-between items-center py-1">
+  <span className="ex-name">{ex.exercise?.exercise?.name}</span>
+  <div className="flex space-x-1.5">
+    {ex.workout_session_sets?.map((set: any, sIdx: number) => (
+      <span key={sIdx} className="gold-badge">
+        {set.weight_lb}x{set.reps}
+      </span>
+    ))}
+  </div>
+</div>
       ))}
     </div>
   </div>

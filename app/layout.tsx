@@ -33,9 +33,11 @@ export default function RootLayout({
       <body className={`${inter.className} max-w-md mx-auto bg-gray-950 min-h-screen relative flex flex-col`}>
         {/* Main scrollable content area, padded at the bottom so it doesn't hide behind the navbar */}
         <main className="flex-1 pb-24 px-4 pt-6">
-          {children}
+          <div className="min-h-screen pb-24 px-4 pt-4 max-w-md mx-auto">
+            {children}
+          </div>
         </main>
-        
+
         <BottomNav />
       </body>
     </html>
