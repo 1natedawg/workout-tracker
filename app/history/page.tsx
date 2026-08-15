@@ -176,7 +176,7 @@ export default function HistoryPage() {
         {/* Sort Button */}
         <button
           onClick={() => setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc')}
-          className="flex items-center space-x-1 bg-gray-900 border border-gray-800 text-gray-300 px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-850 transition"
+          className="flex items-center space-x-1 gold-card text-gray-300 px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-850 transition"
         >
           <ArrowUpDown className="w-3.5 h-3.5 text-emerald-500" />
           <span>{sortOrder === 'desc' ? 'Newest First' : 'Oldest First'}</span>
@@ -189,7 +189,7 @@ export default function HistoryPage() {
         <select
           value={selectedExerciseFilter}
           onChange={(e) => setSelectedExerciseFilter(e.target.value)}
-          className="w-full bg-gray-900 border border-gray-800 rounded-lg pl-9 pr-4 py-2 text-sm text-gray-100 focus:outline-none focus:border-emerald-500 appearance-none"
+          className="w-full gold-card rounded-lg pl-9 pr-4 py-2 text-sm text-gray-100 focus:outline-none focus:border-emerald-500 appearance-none"
         >
           <option value="all">All Exercises (Filter history)</option>
           {exerciseLibrary.sort((a, b) => a.exercise.name.localeCompare(b.exercise.name)).map((item) => (
@@ -219,10 +219,10 @@ export default function HistoryPage() {
               <div
                 key={session.id}
                 onClick={() => handleOpenSession(session)}
-                className="bg-gray-900 border border-gray-800 p-4 rounded-2xl flex items-center justify-between cursor-pointer hover:border-gray-700 transition"
+                className="gold-card p-4 rounded-2xl flex items-center justify-between cursor-pointer hover:border-gray-700 transition"
               >
                 <div className="space-y-1">
-                  <div className="flex items-center space-x-2 text-xs text-emerald-400 font-medium">
+                  <div className="flex items-center space-x-2 text-xs text-amber-400 font-medium">
                     <Calendar className="w-3.5 h-3.5" />
                     <span>{dateStr}</span>
                   </div>
@@ -246,7 +246,7 @@ export default function HistoryPage() {
       {/* Session Detail & Edit Modal */}
       {activeSession && (
         <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-          <div className="bg-gray-900 border border-gray-800 w-full max-w-md rounded-2xl p-5 space-y-4 shadow-xl max-h-[85vh] flex flex-col">
+          <div className="gold-card w-full max-w-md rounded-2xl p-5 space-y-4 shadow-xl max-h-[85vh] flex flex-col">
             
             <div className="flex justify-between items-center border-b border-gray-800 pb-3">
               <div>
@@ -263,7 +263,7 @@ export default function HistoryPage() {
             <div className="flex-1 overflow-y-auto space-y-4 pr-1">
               {activeSession.workout_session_exercises.map((exItem) => (
                 <div key={exItem.id} className="bg-gray-950 border border-gray-800 p-3 rounded-xl space-y-2">
-                  <h4 className="font-semibold text-emerald-400 text-sm">
+                  <h4 className="font-semibold text-amber-400 text-sm">
                     {exItem.exercise?.exercise?.name || 'Exercise'}
                   </h4>
 
@@ -286,7 +286,7 @@ export default function HistoryPage() {
                               type="number"
                               value={currentVals.weight}
                               onChange={(e) => handleSetChange(set.id, 'weight', e.target.value)}
-                              className="w-full bg-gray-900 border border-gray-800 rounded-lg py-1.5 text-center text-xs text-gray-100 focus:outline-none focus:border-emerald-500"
+                              className="w-full gold-card rounded-lg py-1.5 text-center text-xs text-gray-100 focus:outline-none focus:border-emerald-500"
                             />
                           </div>
                           <div className="col-span-5">
@@ -294,7 +294,7 @@ export default function HistoryPage() {
                               type="number"
                               value={currentVals.reps}
                               onChange={(e) => handleSetChange(set.id, 'reps', e.target.value)}
-                              className="w-full bg-gray-900 border border-gray-800 rounded-lg py-1.5 text-center text-xs text-gray-100 focus:outline-none focus:border-emerald-500"
+                              className="w-full gold-card rounded-lg py-1.5 text-center text-xs text-gray-100 focus:outline-none focus:border-emerald-500"
                             />
                           </div>
                         </div>
@@ -319,7 +319,7 @@ export default function HistoryPage() {
                 type="button"
                 onClick={handleSaveChanges}
                 disabled={isUpdating}
-                className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-xl text-xs font-medium transition flex items-center justify-center space-x-1 disabled:opacity-50"
+                className="flex-1 gold-btn text-white py-2 rounded-xl text-xs font-medium transition flex items-center justify-center space-x-1 disabled:opacity-50"
               >
                 <Check className="w-4 h-4" />
                 <span>{isUpdating ? 'Saving...' : 'Save Changes'}</span>

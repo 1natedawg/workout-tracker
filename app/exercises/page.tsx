@@ -118,7 +118,7 @@ export default function ExercisesPage() {
         <h1 className="text-2xl font-bold tracking-tight">Exercises</h1>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center space-x-1 bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition"
+          className="flex items-center space-x-1 gold-btn text-white px-3 py-1.5 rounded-lg text-sm font-medium transition"
         >
           <Plus className="w-4 h-4" />
           <span>Add New</span>
@@ -133,7 +133,7 @@ export default function ExercisesPage() {
           placeholder="Search by name or muscle group..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full bg-gray-900 border border-gray-800 rounded-lg pl-9 pr-4 py-2 text-sm text-gray-100 focus:outline-none focus:border-emerald-500"
+          className="w-full gold-card rounded-lg pl-9 pr-4 py-2 text-sm text-gray-100 focus:outline-none focus:border-emerald-500"
         />
       </div>
 
@@ -149,7 +149,7 @@ export default function ExercisesPage() {
             return (
               <div
                 key={item.id}
-                className="bg-gray-900 border border-gray-800/80 p-3.5 rounded-xl flex items-center justify-between"
+                className="gold-card/80 p-3.5 rounded-xl flex items-center justify-between"
               >
                 <div>
                   <h3 className="font-medium text-gray-200">{ex.name}</h3>
@@ -167,7 +167,7 @@ export default function ExercisesPage() {
       {/* Add Exercise Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-          <div className="bg-gray-900 border border-gray-800 w-full max-w-sm rounded-2xl p-5 space-y-4 shadow-xl max-h-[90vh] overflow-y-auto">
+          <div className="gold-card w-full max-w-sm rounded-2xl p-5 space-y-4 shadow-xl max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center">
               <h2 className="text-lg font-bold">New Exercise</h2>
               <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-white">
@@ -263,7 +263,7 @@ export default function ExercisesPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-lg text-sm font-medium transition disabled:opacity-50"
+                  className="flex-1 gold-btn text-white py-2 rounded-lg text-sm font-medium transition disabled:opacity-50"
                 >
                   {loading ? 'Saving...' : 'Save'}
                 </button>

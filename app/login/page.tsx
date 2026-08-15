@@ -39,7 +39,7 @@ export default function LoginPage() {
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-sm text-gray-100"
+          className="w-full gold-card rounded-lg px-3 py-2 text-sm text-gray-100"
           required
         />
         <input
@@ -47,13 +47,13 @@ export default function LoginPage() {
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-sm text-gray-100"
+          className="w-full gold-card rounded-lg px-3 py-2 text-sm text-gray-100"
           required
         />
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-lg text-sm font-medium"
+          className="w-full gold-btn text-white py-2 rounded-lg text-sm font-medium"
         >
           {loading ? 'Logging in...' : 'Log In'}
         </button>

@@ -331,7 +331,7 @@ export default function LogWorkoutPage() {
           <button
             onClick={handleFinishWorkout}
             disabled={loading}
-            className="flex items-center space-x-1 bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-1.5 rounded-lg text-sm font-medium transition shadow-lg shadow-emerald-950/50"
+            className="flex items-center space-x-1 gold-btn text-white px-3.5 py-1.5 rounded-lg text-sm font-medium transition shadow-lg shadow-emerald-950/50"
           >
             <CheckCircle className="w-4 h-4" />
             <span>{loading ? 'Saving...' : 'Finish'}</span>
@@ -344,7 +344,7 @@ export default function LogWorkoutPage() {
           {/* 1. Day-of-Week Smart Recommendation Card */}
           {todaysScheduledRoutine ? (
             <div className="bg-gradient-to-br from-emerald-950/40 to-gray-900 border border-emerald-500/40 rounded-2xl p-5 space-y-3 shadow-lg">
-              <div className="flex items-center space-x-2 text-xs font-semibold text-emerald-400 uppercase tracking-wider">
+              <div className="flex items-center space-x-2 text-xs font-semibold text-amber-400 uppercase tracking-wider">
                 <Play className="w-3.5 h-3.5 fill-emerald-400" />
                 <span>Scheduled For Today</span>
               </div>
@@ -356,14 +356,14 @@ export default function LogWorkoutPage() {
               </div>
               <button
                 onClick={() => loadRoutineIntoWorkout(todaysScheduledRoutine)}
-                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-2.5 rounded-xl text-sm font-semibold transition flex items-center justify-center space-x-1.5 shadow-md"
+                className="w-full gold-btn text-white py-2.5 rounded-xl text-sm font-semibold transition flex items-center justify-center space-x-1.5 shadow-md"
               >
                 <Play className="w-4 h-4 fill-white" />
                 <span>Start Scheduled Workout</span>
               </button>
             </div>
           ) : (
-            <div className="bg-gray-900 border border-gray-800 rounded-2xl p-4 text-center text-xs text-gray-500">
+            <div className="gold-card rounded-2xl p-4 text-center text-xs text-gray-500">
               No specific workout routine scheduled for {todayName} in your active plan.
             </div>
           )}
@@ -374,7 +374,7 @@ export default function LogWorkoutPage() {
               onClick={() => setIsChoosingRoutine(true)}
               className="bg-gray-900 hover:bg-gray-850 border border-gray-800 p-4 rounded-2xl text-left space-y-1 transition group"
             >
-              <div className="w-8 h-8 rounded-lg bg-gray-800 flex items-center justify-center text-emerald-400 group-hover:bg-emerald-950 transition">
+              <div className="w-8 h-8 rounded-lg bg-gray-800 flex items-center justify-center text-amber-400 group-hover:bg-emerald-950 transition">
                 <Dumbbell className="w-4 h-4" />
               </div>
               <div className="font-semibold text-sm text-gray-200 pt-1">Choose Routine</div>
@@ -385,7 +385,7 @@ export default function LogWorkoutPage() {
               onClick={() => setIsChoosingExercise(true)}
               className="bg-gray-900 hover:bg-gray-850 border border-gray-800 p-4 rounded-2xl text-left space-y-1 transition group"
             >
-              <div className="w-8 h-8 rounded-lg bg-gray-800 flex items-center justify-center text-emerald-400 group-hover:bg-emerald-950 transition">
+              <div className="w-8 h-8 rounded-lg bg-gray-800 flex items-center justify-center text-amber-400 group-hover:bg-emerald-950 transition">
                 <Plus className="w-4 h-4" />
               </div>
               <div className="font-semibold text-sm text-gray-200 pt-1">Ad-hoc Add</div>
@@ -396,9 +396,9 @@ export default function LogWorkoutPage() {
       ) : (
         <div className="space-y-4">
           {selectedExercises.map((item, exIndex) => (
-            <div key={exIndex} className="bg-gray-900 border border-gray-800 rounded-2xl p-4 space-y-3">
+            <div key={exIndex} className="gold-card rounded-2xl p-4 space-y-3">
               <div className="flex justify-between items-center border-b border-gray-800 pb-2">
-                <h3 className="font-semibold text-emerald-400">{item.name}</h3>
+                <h3 className="font-semibold text-amber-400">{item.name}</h3>
                 <button
                   onClick={() => removeExercise(exIndex)}
                   className="text-gray-500 hover:text-red-400 transition"
@@ -461,7 +461,7 @@ export default function LogWorkoutPage() {
 
           <button
             onClick={() => setIsChoosingExercise(true)}
-            className="w-full py-3 bg-gray-900 hover:bg-gray-850 border border-dashed border-gray-800 rounded-2xl text-sm font-medium text-emerald-400 flex items-center justify-center space-x-1 transition"
+            className="w-full py-3 bg-gray-900 hover:bg-gray-850 border border-dashed border-gray-800 rounded-2xl text-sm font-medium text-amber-400 flex items-center justify-center space-x-1 transition"
           >
             <Plus className="w-4 h-4" />
             <span>Add Another Exercise</span>
@@ -472,7 +472,7 @@ export default function LogWorkoutPage() {
       {/* Routine Picker Modal */}
       {isChoosingRoutine && (
         <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-          <div className="bg-gray-900 border border-gray-800 w-full max-w-sm rounded-2xl p-5 space-y-4 shadow-xl max-h-[80vh] flex flex-col">
+          <div className="gold-card w-full max-w-sm rounded-2xl p-5 space-y-4 shadow-xl max-h-[80vh] flex flex-col">
             <h2 className="text-lg font-bold">Select Routine</h2>
             
             <div className="flex-1 overflow-y-auto space-y-2 pr-1">
@@ -508,7 +508,7 @@ export default function LogWorkoutPage() {
       {/* Exercise Picker Modal (Ad-hoc) */}
       {isChoosingExercise && (
         <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-          <div className="bg-gray-900 border border-gray-800 w-full max-w-sm rounded-2xl p-5 space-y-4 shadow-xl max-h-[80vh] flex flex-col">
+          <div className="gold-card w-full max-w-sm rounded-2xl p-5 space-y-4 shadow-xl max-h-[80vh] flex flex-col">
             <h2 className="text-lg font-bold">Select Exercise</h2>
             
             <div className="flex-1 overflow-y-auto space-y-2 pr-1">

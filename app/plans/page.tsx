@@ -304,7 +304,7 @@ const [activeTab, setActiveTab] = useState<'routines' | 'plans'>('routines');
   return (
     <div className="space-y-4 pb-12">
       {/* Tab Switcher */}
-      <div className="flex bg-gray-900 border border-gray-800 p-1 rounded-xl">
+      <div className="flex gold-card p-1 rounded-xl">
         <button
           onClick={() => setActiveTab('routines')}
           className={`flex-1 py-2 text-xs font-semibold rounded-lg transition ${
@@ -329,7 +329,7 @@ const [activeTab, setActiveTab] = useState<'routines' | 'plans'>('routines');
         </h1>
         <button
           onClick={() => activeTab === 'routines' ? setIsRoutineModalOpen(true) : setIsPlanModalOpen(true)}
-          className="flex items-center space-x-1 bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition"
+          className="flex items-center space-x-1 gold-btn text-white px-3 py-1.5 rounded-lg text-sm font-medium transition"
         >
           <Plus className="w-4 h-4" />
           <span>New {activeTab === 'routines' ? 'Routine' : 'Plan'}</span>
@@ -348,10 +348,10 @@ const [activeTab, setActiveTab] = useState<'routines' | 'plans'>('routines');
               <div
                 key={routine.id}
                 onClick={() => openEditRoutine(routine)}
-                className="bg-gray-900 border border-gray-800 p-4 rounded-2xl flex items-center justify-between cursor-pointer hover:border-gray-700 transition"
+                className="gold-card p-4 rounded-2xl flex items-center justify-between cursor-pointer hover:border-gray-700 transition"
               >
                 <div className="space-y-1">
-                  <h3 className="font-semibold text-emerald-400">{routine.name}</h3>
+                  <h3 className="font-semibold text-amber-400">{routine.name}</h3>
                   <p className="text-xs text-gray-500">
                     {routine.workout_exercises?.length || 0} exercise(s) included
                   </p>
@@ -381,10 +381,10 @@ const [activeTab, setActiveTab] = useState<'routines' | 'plans'>('routines');
               <div
                 key={plan.id}
                 onClick={() => openEditPlan(plan)}
-                className="bg-gray-900 border border-gray-800 p-4 rounded-2xl space-y-3 cursor-pointer hover:border-gray-700 transition"
+                className="gold-card p-4 rounded-2xl space-y-3 cursor-pointer hover:border-gray-700 transition"
               >
                 <div className="flex justify-between items-center">
-                  <h3 className="font-semibold text-emerald-400 text-base">{plan.name}</h3>
+                  <h3 className="font-semibold text-amber-400 text-base">{plan.name}</h3>
                   <div className="flex items-center space-x-2">
                     <Edit3 className="w-4 h-4 text-gray-500" />
                     <button
@@ -422,7 +422,7 @@ const [activeTab, setActiveTab] = useState<'routines' | 'plans'>('routines');
       {/* Routine Creation Modal */}
       {isRoutineModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-          <div className="bg-gray-900 border border-gray-800 w-full max-w-sm rounded-2xl p-5 space-y-4 shadow-xl max-h-[85vh] flex flex-col">
+          <div className="gold-card w-full max-w-sm rounded-2xl p-5 space-y-4 shadow-xl max-h-[85vh] flex flex-col">
             <div className="flex justify-between items-center">
               <h2 className="text-lg font-bold">New Routine</h2>
               <button onClick={() => setIsRoutineModalOpen(false)} className="text-gray-400 hover:text-white">
@@ -478,7 +478,7 @@ const [activeTab, setActiveTab] = useState<'routines' | 'plans'>('routines');
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-xl text-sm font-medium transition"
+                  className="flex-1 gold-btn text-white py-2 rounded-xl text-sm font-medium transition"
                 >
                   Save Routine
                 </button>
@@ -491,7 +491,7 @@ const [activeTab, setActiveTab] = useState<'routines' | 'plans'>('routines');
       {/* Routine Editing Modal */}
       {editingRoutine && (
         <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-          <div className="bg-gray-900 border border-gray-800 w-full max-w-sm rounded-2xl p-5 space-y-4 shadow-xl max-h-[85vh] flex flex-col">
+          <div className="gold-card w-full max-w-sm rounded-2xl p-5 space-y-4 shadow-xl max-h-[85vh] flex flex-col">
             <div className="flex justify-between items-center">
               <h2 className="text-lg font-bold">Edit Routine</h2>
               <button onClick={() => setEditingRoutine(null)} className="text-gray-400 hover:text-white">
@@ -546,7 +546,7 @@ const [activeTab, setActiveTab] = useState<'routines' | 'plans'>('routines');
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-xl text-sm font-medium transition"
+                  className="flex-1 gold-btn text-white py-2 rounded-xl text-sm font-medium transition"
                 >
                   Save Changes
                 </button>
@@ -559,7 +559,7 @@ const [activeTab, setActiveTab] = useState<'routines' | 'plans'>('routines');
       {/* 7-Day Plan Creation Modal */}
       {isPlanModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-          <div className="bg-gray-900 border border-gray-800 w-full max-w-md rounded-2xl p-5 space-y-4 shadow-xl max-h-[90vh] flex flex-col">
+          <div className="gold-card w-full max-w-md rounded-2xl p-5 space-y-4 shadow-xl max-h-[90vh] flex flex-col">
             <div className="flex justify-between items-center">
               <h2 className="text-lg font-bold">New 7-Day Weekly Plan</h2>
               <button onClick={() => setIsPlanModalOpen(false)} className="text-gray-400 hover:text-white">
@@ -588,7 +588,7 @@ const [activeTab, setActiveTab] = useState<'routines' | 'plans'>('routines');
                     <select
                       value={planDays[idx] || 'rest'}
                       onChange={(e) => setPlanDays({ ...planDays, [idx]: e.target.value === 'rest' ? null : e.target.value })}
-                      className="flex-1 bg-gray-900 border border-gray-800 rounded-lg px-2 py-1.5 text-xs text-gray-100 focus:outline-none focus:border-emerald-500"
+                      className="flex-1 gold-card rounded-lg px-2 py-1.5 text-xs text-gray-100 focus:outline-none focus:border-emerald-500"
                     >
                       <option value="rest">🛌 Rest Day</option>
                       {routines.map((r) => (
@@ -609,7 +609,7 @@ const [activeTab, setActiveTab] = useState<'routines' | 'plans'>('routines');
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-xl text-sm font-medium transition"
+                  className="flex-1 gold-btn text-white py-2 rounded-xl text-sm font-medium transition"
                 >
                   Save Plan
                 </button>
@@ -622,7 +622,7 @@ const [activeTab, setActiveTab] = useState<'routines' | 'plans'>('routines');
       {/* 7-Day Plan Editing Modal */}
       {editingPlan && (
         <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-          <div className="bg-gray-900 border border-gray-800 w-full max-w-md rounded-2xl p-5 space-y-4 shadow-xl max-h-[90vh] flex flex-col">
+          <div className="gold-card w-full max-w-md rounded-2xl p-5 space-y-4 shadow-xl max-h-[90vh] flex flex-col">
             <div className="flex justify-between items-center">
               <h2 className="text-lg font-bold">Edit 7-Day Weekly Plan</h2>
               <button onClick={() => setEditingPlan(null)} className="text-gray-400 hover:text-white">
@@ -650,7 +650,7 @@ const [activeTab, setActiveTab] = useState<'routines' | 'plans'>('routines');
                     <select
                       value={editPlanDays[idx] || 'rest'}
                       onChange={(e) => setEditPlanDays({ ...editPlanDays, [idx]: e.target.value === 'rest' ? null : e.target.value })}
-                      className="flex-1 bg-gray-900 border border-gray-800 rounded-lg px-2 py-1.5 text-xs text-gray-100 focus:outline-none focus:border-emerald-500"
+                      className="flex-1 gold-card rounded-lg px-2 py-1.5 text-xs text-gray-100 focus:outline-none focus:border-emerald-500"
                     >
                       <option value="rest">🛌 Rest Day</option>
                       {routines.map((r) => (
@@ -671,7 +671,7 @@ const [activeTab, setActiveTab] = useState<'routines' | 'plans'>('routines');
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-xl text-sm font-medium transition"
+                  className="flex-1 gold-btn text-white py-2 rounded-xl text-sm font-medium transition"
                 >
                   Save Changes
                 </button>
