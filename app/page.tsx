@@ -9,7 +9,7 @@ interface ExerciseRecord {
   id: number;
   exercise: {
     name: string;
-    sets: number;
+    target_sets: number;
   };
 }
 
@@ -18,7 +18,7 @@ interface Routine {
   name: string;
   workout_exercises: {
     exercise_id: number;
-    exercise: { name: string; sets: number };
+    exercise: { name: string; target_sets: number };
   }[];
 }
 
@@ -75,7 +75,11 @@ export default function LogWorkoutPage() {
     }
 
     // 1. Fetch complete exercise library
-    const { data: exData } = await supabase.from('exercise').select('*').order('id', { ascending: false });
+    const { data: exData } = await supabase
+      .from('exercise')
+      .select('*')
+      .order('exercise->>name', { ascending: true });
+
     if (exData) setExerciseLibrary(exData);
 
     // 2. Fetch routines with their associated exercises[cite: 1]
@@ -175,7 +179,7 @@ export default function LogWorkoutPage() {
     for (const item of routine.workout_exercises) {
       const exerciseId = item.exercise_id;
       const exerciseName = item.exercise?.name || 'Exercise';
-      const defaultSetsCount = item.exercise?.sets || 3;
+      const defaultSetsCount = item.exercise?.target_sets || 3;
 
       const pastSets = await fetchPreviousExercisePerformance(exerciseId);
 
@@ -202,7 +206,7 @@ export default function LogWorkoutPage() {
   }
 
   async function addExerciseToWorkout(record: ExerciseRecord) {
-    const defaultSetsCount = record.exercise.sets || 3;
+    const defaultSetsCount = record.exercise.target_sets || 3;
     const pastSets = await fetchPreviousExercisePerformance(record.id);
 
     const initialSets: WorkoutSet[] = Array.from({ length: defaultSetsCount }, (_, i) => {
@@ -523,7 +527,7 @@ export default function LogWorkoutPage() {
                   >
                     <div>
                       <h4 className="font-medium text-gray-200 text-sm">{item.exercise.name}</h4>
-                      <p className="text-xs text-gray-500 mt-0.5">{item.exercise.sets} default sets</p>
+                      <p className="text-xs text-gray-500 mt-0.5">{item.exercise.target_sets} default sets</p>
                     </div>
                     <Plus className="w-4 h-4 text-emerald-500" />
                   </button>
