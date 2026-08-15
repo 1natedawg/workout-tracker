@@ -57,7 +57,7 @@ export default function HistoryPage() {
 }
 
   return (
-    <div className="space-y-6 pb-24">
+    <div className="space-y-6 pb-32 px-4 pt-4 max-w-md mx-auto">
       <h1 className="text-2xl font-bold">History</h1>
       
       {sessions.map((session, idx) => (

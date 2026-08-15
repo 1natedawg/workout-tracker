@@ -62,6 +62,8 @@ export default function LogWorkoutPage() {
   const [isChoosingRoutine, setIsChoosingRoutine] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
+  const [exercisesState, setExercisesState] = useState<any[]>([]);
   useEffect(() => {
     initLogPage();
   }, []);
@@ -71,6 +73,60 @@ export default function LogWorkoutPage() {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
       window.location.href = '/login';
+      return;
+    }
+    const userId = session.user.id;
+// 2. Check for an active (unfinished) session right after auth check
+const { data: activeSessions } = await supabase
+    .from('workout_sessions')
+    .select(`
+      id,
+      started_at,
+      workout_session_exercises (
+        id,
+        exercise_id,
+        exercise:exercise_id (
+            exercise
+          ),
+        workout_session_sets ( id, weight_lb, reps, set_index )
+      )
+    `)
+    .eq('user_id', userId)
+    .is('ended_at', null)
+    .order('started_at', { ascending: false })
+    .limit(1);
+
+if (activeSessions && activeSessions.length > 0) {
+    const active = activeSessions[0];
+    
+    // Track active session ID for finishing later
+    setActiveSessionId(active.id);
+
+    // Map DB structure to your existing `selectedExercises` layout
+    if (active.workout_session_exercises && active.workout_session_exercises.length > 0) {
+      const restoredExercises = active.workout_session_exercises.map((se: any) => {
+        // Sort sets by set_index
+        const sortedSets = (se.workout_session_sets || []).sort(
+          (a: any, b: any) => a.set_index - b.set_index
+        );
+
+        return {
+          sessionExerciseId: se.id,
+          exercise_id: se.exercise_id,
+          name: se.exercise?.exercise?.name || 'Exercise',
+          sets: sortedSets.map((s: any, idx: number) => ({
+            setId: s.id,
+            set_number: idx + 1,
+            weight: s.weight_lb ? String(s.weight_lb) : '',
+            reps: s.reps ? String(s.reps) : '',
+          })),
+        };
+      });
+
+      // Populate your existing JSX state!
+      setSelectedExercises(restoredExercises);
+      
+      // Stop execution so it doesn't prompt for a new routine
       return;
     }
 
@@ -142,8 +198,9 @@ export default function LogWorkoutPage() {
       }
     }
   }
+}
 
-  async function fetchPreviousExercisePerformance(exerciseId: number): Promise<PastSetInfo[] | null> {
+  async function fetchPreviousExercisePerformance(exercise_id: number): Promise<PastSetInfo[] | null> {
     const supabase = createClient();
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) return null;
@@ -157,7 +214,7 @@ export default function LogWorkoutPage() {
           started_at
         )
       `)
-      .eq('exercise_id', exerciseId)
+      .eq('exercise_id', exercise_id)
       .eq('workout_sessions.user_id', session.user.id)
       .order('workout_sessions(started_at)', { ascending: false })
       .limit(1);
@@ -255,69 +312,92 @@ export default function LogWorkoutPage() {
   }
 
   async function handleFinishWorkout() {
-    if (selectedExercises.length === 0) {
-      alert('Add at least one exercise to your workout!');
-      return;
-    }
+  if (selectedExercises.length === 0) {
+    alert('Add at least one exercise to your workout!');
+    return;
+  }
 
-    setLoading(true);
+  setLoading(true);
 
-    try {
-      const supabase = createClient();
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error('Not authenticated');
+  try {
+    const supabase = createClient();
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) throw new Error('Not authenticated');
 
+    let workoutSessionId = activeSessionId;
+
+    // 1. If there's no active session (e.g. built from scratch in one go), create one with ended_at set immediately
+    if (!workoutSessionId) {
       const { data: sessionData, error: sessionError } = await supabase
         .from('workout_sessions')
-        .insert([{ user_id: session.user.id }])
+        .insert([{ 
+          user_id: session.user.id,
+          started_at: new Date().toISOString(),
+          ended_at: new Date().toISOString() // Finished immediately
+        }])
         .select()
         .single();
 
       if (sessionError) throw sessionError;
-      const workoutSessionId = sessionData.id;
+      workoutSessionId = sessionData.id;
+    } else {
+      // 2. If it was a recovered active session, just update the ended_at timestamp to close it out
+      const { error: updateError } = await supabase
+        .from('workout_sessions')
+        .update({ ended_at: new Date().toISOString() })
+        .eq('id', workoutSessionId);
 
-      for (let i = 0; i < selectedExercises.length; i++) {
-        const item = selectedExercises[i];
-
-        const { data: exRecord, error: exError } = await supabase
-          .from('workout_session_exercises')
-          .insert([{
-            workout_session_id: workoutSessionId,
-            exercise_id: item.exercise_id,
-            position: i,
-          }])
-          .select()
-          .single();
-
-        if (exError) throw exError;
-
-        const setsToInsert = item.sets
-          .filter((set) => set.weight !== '' && set.reps !== '')
-          .map((set, setIdx) => ({
-            workout_session_exercise_id: exRecord.id,
-            set_index: setIdx,
-            weight_lb: Number(set.weight),
-            reps: Number(set.reps),
-          }));
-
-        if (setsToInsert.length > 0) {
-          const { error: setsError } = await supabase
-            .from('workout_session_sets')
-            .insert(setsToInsert);
-
-          if (setsError) throw setsError;
-        }
-      }
-
-      alert('Workout saved successfully!');
-      router.push('/history');
-    } catch (err: any) {
-      console.error('Error saving workout:', err);
-      alert('Error saving workout: ' + err.message);
-    } finally {
-      setLoading(false);
+      if (updateError) throw updateError;
     }
+
+    // 3. Save / Update exercises and sets
+    for (let i = 0; i < selectedExercises.length; i++) {
+      const item = selectedExercises[i];
+
+      const { data: exRecord, error: exError } = await supabase
+        .from('workout_session_exercises')
+        .insert([{
+          workout_session_id: workoutSessionId,
+          exercise_id: item.exercise_id,
+          position: i,
+        }])
+        .select()
+        .single();
+
+      if (exError) throw exError;
+
+      const setsToInsert = item.sets
+        .filter((set) => set.weight !== '' && set.reps !== '')
+        .map((set, setIdx) => ({
+          workout_session_exercise_id: exRecord.id,
+          set_index: setIdx,
+          weight_lb: Number(set.weight),
+          reps: Number(set.reps),
+        }));
+
+      if (setsToInsert.length > 0) {
+        const { error: setsError } = await supabase
+          .from('workout_session_sets')
+          .insert(setsToInsert);
+
+        if (setsError) throw setsError;
+      }
+    }
+
+    alert('Workout saved successfully!');
+    
+    // Reset active session state so the logger clears out
+    setActiveSessionId(null);
+    setSelectedExercises([]);
+
+    router.push('/history');
+  } catch (err: any) {
+    console.error('Error saving workout:', err);
+    alert('Error saving workout: ' + err.message);
+  } finally {
+    setLoading(false);
   }
+}
 
   const todayName = new Date().toLocaleDateString(undefined, { weekday: 'long' });
 
@@ -331,6 +411,7 @@ export default function LogWorkoutPage() {
             <span>Happy {todayName}!</span>
           </p>
         </div>
+
         {selectedExercises.length > 0 && (
           <button
             onClick={handleFinishWorkout}
