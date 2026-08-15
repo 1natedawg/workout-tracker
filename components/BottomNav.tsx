@@ -9,6 +9,10 @@ export default function BottomNav() {
           <PlusCircle className="w-6 h-6" />
           <span className="text-xs mt-1">Log</span>
         </Link>
+        <Link href="/plans" className="flex flex-col items-center text-gray-400 hover:text-white">
+          <Dumbbell className="w-6 h-6" />
+          <span className="text-xs mt-1">Workout Plans</span>
+        </Link>
         <Link href="/history" className="flex flex-col items-center text-gray-400 hover:text-white">
           <History className="w-6 h-6" />
           <span className="text-xs mt-1">History</span>
