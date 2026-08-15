@@ -51,7 +51,7 @@ export default function ExercisesPage() {
         const { data, error } = await supabase
             .from('exercise')
             .select('*')
-            .order('id', { ascending: true });
+            .order('exercise->>name', { ascending: true });
 
         if (error) {
             console.error('Error fetching exercises:', error);
