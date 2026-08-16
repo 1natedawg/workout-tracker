@@ -76,25 +76,47 @@ export default function LogWorkoutPage() {
       return;
     }
     const userId = session.user.id;
-// 2. Check for an active (unfinished) session right after auth check
-const { data: activeSessions } = await supabase
-    .from('workout_sessions')
-    .select(`
-      id,
-      started_at,
-      workout_session_exercises (
+    const now = new Date();
+    const startOfToday = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      0,
+      0,
+      0,
+      0
+    ).toISOString();
+    const startOfTomorrow = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() + 1,
+      0,
+      0,
+      0,
+      0
+    ).toISOString();
+
+    // 2. Check for a non-finished session that started today
+    const { data: activeSessions } = await supabase
+      .from('workout_sessions')
+      .select(`
         id,
-        exercise_id,
-        exercise:exercise_id (
-            exercise
-          ),
-        workout_session_sets ( id, weight_lb, reps, set_index )
-      )
-    `)
-    .eq('user_id', userId)
-    .is('ended_at', null)
-    .order('started_at', { ascending: false })
-    .limit(1);
+        started_at,
+        workout_session_exercises (
+          id,
+          exercise_id,
+          exercise:exercise_id (
+              exercise
+            ),
+          workout_session_sets ( id, weight_lb, reps, set_index )
+        )
+      `)
+      .eq('user_id', userId)
+      .is('ended_at', null)
+      .gte('started_at', startOfToday)
+      .lt('started_at', startOfTomorrow)
+      .order('started_at', { ascending: false })
+      .limit(1);
 
 if (activeSessions && activeSessions.length > 0) {
     const active = activeSessions[0];

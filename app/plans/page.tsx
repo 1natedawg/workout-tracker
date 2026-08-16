@@ -86,7 +86,8 @@ const [activeTab, setActiveTab] = useState<'routines' | 'plans'>('routines');
           exercise:exercise_id ( exercise ->> 'name' as name )
         )
       `)
-      .eq('user_id', session.user.id);
+      .eq('user_id', session.user.id)
+      .order('name', { ascending: true });
     
     if (routineData) {
       // Flatten joined nested structure safely
@@ -118,7 +119,9 @@ const [activeTab, setActiveTab] = useState<'routines' | 'plans'>('routines');
     if (planData) setPlans(planData as unknown as WorkoutPlan[]);
 
     // 3. Fetch exercise library
-    const { data: exData } = await supabase.from('exercise').select('id, exercise');
+    const { data: exData } = await supabase.from('exercise')
+    .select('id, exercise')
+    .order('exercise->>name', { ascending: true });
     if (exData) setExerciseLibrary(exData);
 
     setLoading(false);
