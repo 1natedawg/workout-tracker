@@ -96,7 +96,7 @@ export default function LogWorkoutPage() {
       0
     ).toISOString();
 
-    // 2. Check for a non-finished session that started today
+    // 1. Check for a non-finished session that started today
     const { data: activeSessions } = await supabase
       .from('workout_sessions')
       .select(`
@@ -118,41 +118,34 @@ export default function LogWorkoutPage() {
       .order('started_at', { ascending: false })
       .limit(1);
 
-if (activeSessions && activeSessions.length > 0) {
-    const active = activeSessions[0];
-    
-    // Track active session ID for finishing later
-    setActiveSessionId(active.id);
+    if (activeSessions && activeSessions.length > 0) {
+      const active = activeSessions[0];
+      setActiveSessionId(active.id);
 
-    // Map DB structure to your existing `selectedExercises` layout
-    if (active.workout_session_exercises && active.workout_session_exercises.length > 0) {
-      const restoredExercises = active.workout_session_exercises.map((se: any) => {
-        // Sort sets by set_index
-        const sortedSets = (se.workout_session_sets || []).sort(
-          (a: any, b: any) => a.set_index - b.set_index
-        );
+      if (active.workout_session_exercises && active.workout_session_exercises.length > 0) {
+        const restoredExercises = active.workout_session_exercises.map((se: any) => {
+          const sortedSets = (se.workout_session_sets || []).sort(
+            (a: any, b: any) => a.set_index - b.set_index
+          );
 
-        return {
-          sessionExerciseId: se.id,
-          exercise_id: se.exercise_id,
-          name: se.exercise?.exercise?.name || 'Exercise',
-          sets: sortedSets.map((s: any, idx: number) => ({
-            setId: s.id,
-            set_number: idx + 1,
-            weight: s.weight_lb ? String(s.weight_lb) : '',
-            reps: s.reps ? String(s.reps) : '',
-          })),
-        };
-      });
+          return {
+            sessionExerciseId: se.id,
+            exercise_id: se.exercise_id,
+            name: se.exercise?.exercise?.name || 'Exercise',
+            sets: sortedSets.map((s: any, idx: number) => ({
+              setId: s.id,
+              set_number: idx + 1,
+              weight: s.weight_lb ? String(s.weight_lb) : '',
+              reps: s.reps ? String(s.reps) : '',
+            })),
+          };
+        });
 
-      // Populate your existing JSX state!
-      setSelectedExercises(restoredExercises);
-      
-      // Stop execution so it doesn't prompt for a new routine
-      return;
+        setSelectedExercises(restoredExercises);
+      }
     }
 
-    // 1. Fetch complete exercise library
+    // 2. ALWAYS fetch complete exercise library (Moved outside the active session block)
     const { data: exData } = await supabase
       .from('exercise')
       .select('*')
@@ -160,7 +153,7 @@ if (activeSessions && activeSessions.length > 0) {
 
     if (exData) setExerciseLibrary(exData);
 
-    // 2. Fetch routines with their associated exercises[cite: 1]
+    // 3. ALWAYS fetch routines with their associated exercises
     const { data: routineData } = await supabase
       .from('workouts')
       .select(`
@@ -183,10 +176,10 @@ if (activeSessions && activeSessions.length > 0) {
       }));
       setRoutines(formattedRoutines);
 
-      // 3. Detect today's day of the week (0 = Sunday, 6 = Saturday)
+      // 4. Detect today's day of the week (0 = Sunday, 6 = Saturday)
       const currentDayOfWeek = new Date().getDay();
 
-      // 4. Check user's workout plans for today's scheduled workout[cite: 1]
+      // 5. Check user's workout plans for today's scheduled workout
       const { data: planData } = await supabase
         .from('workout_plans')
         .select(`
@@ -220,7 +213,6 @@ if (activeSessions && activeSessions.length > 0) {
       }
     }
   }
-}
 
   async function fetchPreviousExercisePerformance(exercise_id: number): Promise<PastSetInfo[] | null> {
     const supabase = createClient();
