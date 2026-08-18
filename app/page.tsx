@@ -180,6 +180,7 @@ export default function LogWorkoutPage() {
       const currentDayOfWeek = new Date().getDay();
 
       // 5. Check user's workout plans for today's scheduled workout
+      // 5. Check user's workout plans for today's scheduled workout
       const { data: planData } = await supabase
         .from('workout_plans')
         .select(`
@@ -191,7 +192,7 @@ export default function LogWorkoutPage() {
               name,
               workout_exercises (
                 exercise_id,
-                exercise:exercise_id ( name, target_sets )
+                exercise:exercise_id ( exercise )
               )
             )
           )
@@ -204,16 +205,22 @@ export default function LogWorkoutPage() {
         const scheduled = planData[0].workout_plan_days[0].workouts as any;
         const formattedScheduled = {
           ...scheduled,
-          workout_exercises: scheduled.workout_exercises.map((we: any) => ({
-            ...we,
-            exercise: we.exercise?.exercise || we.exercise
-          }))
+          workout_exercises: scheduled.workout_exercises.map((we: any) => {
+            // Extract JSONB properties safely in JS
+            const exJson = we.exercise?.exercise || we.exercise;
+            return {
+              ...we,
+              exercise: {
+                name: exJson?.name || 'Exercise',
+                target_sets: exJson?.target_sets || 3,
+              }
+            };
+          })
         };
         setTodaysScheduledRoutine(formattedScheduled);
       }
-    }
   }
-
+  }
   async function fetchPreviousExercisePerformance(exercise_id: number): Promise<PastSetInfo[] | null> {
     const supabase = createClient();
     const { data: { session } } = await supabase.auth.getSession();
