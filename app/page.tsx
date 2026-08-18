@@ -395,13 +395,23 @@ export default function LogWorkoutPage() {
       if (exError) throw exError;
 
       const setsToInsert = item.sets
-        .filter((set) => set.weight !== '' && set.reps !== '')
-        .map((set, setIdx) => ({
-          workout_session_exercise_id: exRecord.id,
-          set_index: setIdx,
-          weight_lb: Number(set.weight),
-          reps: Number(set.reps),
-        }));
+        .map((set, setIdx) => {
+          // Fall back to previous values (placeholders) if the input is empty
+          const finalWeight = set.weight !== '' ? Number(set.weight) : set.prevWeight;
+          const finalReps = set.reps !== '' ? Number(set.reps) : set.prevReps;
+
+          // Only include the set if both final weight and reps are valid numbers
+          if (finalWeight !== undefined && finalWeight !== null && finalReps !== undefined && finalReps !== null) {
+            return {
+              workout_session_exercise_id: exRecord.id,
+              set_index: setIdx,
+              weight_lb: Number(finalWeight),
+              reps: Number(finalReps),
+            };
+          }
+          return null;
+        })
+        .filter((set): set is NonNullable<typeof set> => set !== null);
 
       if (setsToInsert.length > 0) {
         const { error: setsError } = await supabase
