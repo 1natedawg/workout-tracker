@@ -154,6 +154,7 @@ export default function LogWorkoutPage() {
     if (exData) setExerciseLibrary(exData);
 
     // 3. ALWAYS fetch routines with their associated exercises
+    // 3. ALWAYS fetch routines with their associated exercises
     const { data: routineData } = await supabase
       .from('workouts')
       .select(`
@@ -161,7 +162,7 @@ export default function LogWorkoutPage() {
         name,
         workout_exercises (
           exercise_id,
-          exercise:exercise_id ( exercise ->> 'name' as name, exercise ->> 'target_sets' as sets )
+          exercise:exercise_id ( exercise )
         )
       `)
       .eq('user_id', session.user.id);
@@ -169,10 +170,16 @@ export default function LogWorkoutPage() {
     if (routineData) {
       const formattedRoutines = routineData.map((r: any) => ({
         ...r,
-        workout_exercises: r.workout_exercises.map((we: any) => ({
-          ...we,
-          exercise: we.exercise?.exercise || we.exercise
-        }))
+        workout_exercises: r.workout_exercises.map((we: any) => {
+          const exJson = we.exercise?.exercise || we.exercise;
+          return {
+            ...we,
+            exercise: {
+              name: exJson?.name || 'Exercise',
+              target_sets: exJson?.target_sets || 3,
+            }
+          };
+        })
       }));
       setRoutines(formattedRoutines);
 
