@@ -172,8 +172,9 @@ const [activeTab, setActiveTab] = useState<'routines' | 'plans'>('routines');
     e.preventDefault();
     if (!editingRoutine) return;
 
-    // 1. Update routine name
     const supabase = createClient();
+
+    // 1. Update routine name
     const { error: nameError } = await supabase
       .from('workouts')
       .update({ name: editRoutineName })
@@ -184,25 +185,39 @@ const [activeTab, setActiveTab] = useState<'routines' | 'plans'>('routines');
       return;
     }
 
-    // 2. Replace exercise mappings (delete old, insert new)
-    await supabase.from('workout_exercises').delete().eq('workout_id', editingRoutine.id);
+    // 2. Explicitly AWAIT the deletion of old exercises
+    const { error: deleteError } = await supabase
+      .from('workout_exercises')
+      .delete()
+      .eq('workout_id', editingRoutine.id);
 
-    const workoutExercisesPayload = editRoutineExercises.map((exId, index) => ({
+    if (deleteError) {
+      alert('Error clearing old routine exercises: ' + deleteError.message);
+      return;
+    }
+
+    // 3. Optional: Filter out duplicate exercise IDs to prevent unique constraint clashes
+    const uniqueExerciseIds = Array.from(new Set(editRoutineExercises));
+
+    const workoutExercisesPayload = uniqueExerciseIds.map((exId, index) => ({
       workout_id: editingRoutine.id,
       exercise_id: exId,
       position: index,
     }));
+    console.log('Inserting workout exercises payload:', workoutExercisesPayload);
+    if (workoutExercisesPayload.length > 0) {
+      const { error: weError } = await supabase
+        .from('workout_exercises')
+        .insert(workoutExercisesPayload);
 
-    const { error: weError } = await supabase
-      .from('workout_exercises')
-      .insert(workoutExercisesPayload);
-
-    if (weError) {
-      alert('Error updating routine exercises: ' + weError.message);
-    } else {
-      setEditingRoutine(null);
-      fetchData();
+      if (weError) {
+        alert('Error updating routine exercises: ' + weError.message);
+        return;
+      }
     }
+
+    setEditingRoutine(null);
+    fetchData();
   }
 
   async function handleCreatePlan(e: React.FormEvent) {
