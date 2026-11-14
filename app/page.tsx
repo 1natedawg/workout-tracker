@@ -51,6 +51,55 @@ interface WorkoutExercise {
   sets: WorkoutSet[];
 }
 
+const WORKOUT_STORAGE_KEY = 'workout-tracker:in-progress-workout';
+
+type PersistedWorkoutState = {
+  activeSessionId: string | null;
+  selectedExercises: WorkoutExercise[];
+};
+
+function readPersistedWorkout(): PersistedWorkoutState | null {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  try {
+    const rawValue = window.localStorage.getItem(WORKOUT_STORAGE_KEY);
+    if (!rawValue) return null;
+
+    const parsed = JSON.parse(rawValue) as PersistedWorkoutState;
+    if (!parsed || !Array.isArray(parsed.selectedExercises)) {
+      return null;
+    }
+
+    return {
+      activeSessionId: parsed.activeSessionId ?? null,
+      selectedExercises: parsed.selectedExercises,
+    };
+  } catch (error) {
+    console.warn('Unable to restore in-progress workout from storage', error);
+    return null;
+  }
+}
+
+function persistWorkoutState(activeSessionId: string | null, selectedExercises: WorkoutExercise[]) {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  if (!selectedExercises.length && !activeSessionId) {
+    window.localStorage.removeItem(WORKOUT_STORAGE_KEY);
+    return;
+  }
+
+  const payload: PersistedWorkoutState = {
+    activeSessionId,
+    selectedExercises,
+  };
+
+  window.localStorage.setItem(WORKOUT_STORAGE_KEY, JSON.stringify(payload));
+}
+
 export default function LogWorkoutPage() {
   const router = useRouter();
   const [exerciseLibrary, setExerciseLibrary] = useState<ExerciseRecord[]>([]);
@@ -61,14 +110,32 @@ export default function LogWorkoutPage() {
   const [isChoosingExercise, setIsChoosingExercise] = useState(false);
   const [isChoosingRoutine, setIsChoosingRoutine] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [hasHydratedWorkoutState, setHasHydratedWorkoutState] = useState(false);
 
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [exercisesState, setExercisesState] = useState<any[]>([]);
+
   useEffect(() => {
+    const persistedWorkout = readPersistedWorkout();
+    if (persistedWorkout) {
+      setSelectedExercises(persistedWorkout.selectedExercises);
+      setActiveSessionId(persistedWorkout.activeSessionId);
+    }
+    setHasHydratedWorkoutState(true);
+
     initLogPage();
   }, []);
 
+  useEffect(() => {
+    if (!hasHydratedWorkoutState) {
+      return;
+    }
+
+    persistWorkoutState(activeSessionId, selectedExercises);
+  }, [activeSessionId, selectedExercises, hasHydratedWorkoutState]);
+
   async function initLogPage() {
+    const persistedWorkout = readPersistedWorkout();
     const supabase = createClient();
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
@@ -119,29 +186,33 @@ export default function LogWorkoutPage() {
       .limit(1);
 
     if (activeSessions && activeSessions.length > 0) {
-      const active = activeSessions[0];
-      setActiveSessionId(active.id);
+      const hasLocalWorkoutState = Boolean(persistedWorkout && (persistedWorkout.selectedExercises.length > 0 || persistedWorkout.activeSessionId));
 
-      if (active.workout_session_exercises && active.workout_session_exercises.length > 0) {
-        const restoredExercises = active.workout_session_exercises.map((se: any) => {
-          const sortedSets = (se.workout_session_sets || []).sort(
-            (a: any, b: any) => a.set_index - b.set_index
-          );
+      if (!hasLocalWorkoutState) {
+        const active = activeSessions[0];
+        setActiveSessionId(active.id);
 
-          return {
-            sessionExerciseId: se.id,
-            exercise_id: se.exercise_id,
-            name: se.exercise?.exercise?.name || 'Exercise',
-            sets: sortedSets.map((s: any, idx: number) => ({
-              setId: s.id,
-              set_number: idx + 1,
-              weight: s.weight_lb ? String(s.weight_lb) : '',
-              reps: s.reps ? String(s.reps) : '',
-            })),
-          };
-        });
+        if (active.workout_session_exercises && active.workout_session_exercises.length > 0) {
+          const restoredExercises = active.workout_session_exercises.map((se: any) => {
+            const sortedSets = (se.workout_session_sets || []).sort(
+              (a: any, b: any) => a.set_index - b.set_index
+            );
 
-        setSelectedExercises(restoredExercises);
+            return {
+              sessionExerciseId: se.id,
+              exercise_id: se.exercise_id,
+              name: se.exercise?.exercise?.name || 'Exercise',
+              sets: sortedSets.map((s: any, idx: number) => ({
+                setId: s.id,
+                set_number: idx + 1,
+                weight: s.weight_lb ? String(s.weight_lb) : '',
+                reps: s.reps ? String(s.reps) : '',
+              })),
+            };
+          });
+
+          setSelectedExercises(restoredExercises);
+        }
       }
     }
 
@@ -423,8 +494,8 @@ export default function LogWorkoutPage() {
     }
 
     alert('Workout saved successfully!');
-    
-    // Reset active session state so the logger clears out
+
+    persistWorkoutState(null, []);
     setActiveSessionId(null);
     setSelectedExercises([]);
 
